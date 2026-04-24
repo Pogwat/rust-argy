@@ -67,11 +67,26 @@ fn main() {
     ];
 
  
-    macro_rules! make_big_const_array {
-        ( varible_type: $var_type:ident,  element_type: $element_type:ty, entries:  $($entry:expr)*,)=> {
-            $var_type array: [$element_type;  ${count($entry)}] = [$($entry,)*]
+macro_rules! make_big_array {
+    (varible_type: $var_type:ident, element_type: $element_type:ty, entries: $($entry:expr),*) => {
+        {
+            const LEN: usize = [$($entry),*].len();
+            $var_type ARRAY: [$element_type; LEN] = [$($entry),*];
+            ARRAY
         }
-    }
+    };
+}
+    let biggy = make_big_array!(varible_type: const, element_type: u8, entries: 1,2,3,4 );
+    biggy.iter().for_each(|v| println!("{}",v));
+
+    make_big_array!(
+        varible_type: const, 
+        element_type: (&'static str, ArgEntry), 
+        entries: 
+            argy_entry("id3", "name3", "desc3")
+
+
+    ).iter().for_each(|v| println!("{}", v.1.description));
 
     // macro_rules! argv_to_n_s {
         
@@ -113,7 +128,6 @@ fn main() {
     // const  y:[u8;2]= [3,4];
     // let xy = concat_const_arrays!(u8,x,y);
 
-    #[derive(Clone)]
     struct ArgEntry {
         name: &'static str,
         description: &'static str
